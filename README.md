@@ -1,6 +1,6 @@
-# project2_Slesarev_M26_555
+# project2_Slesarev_M26_555 Primitive DB
 
-
+Консольное приложение, имитирующее работу с базой данных.
 
 ## Getting started
 
