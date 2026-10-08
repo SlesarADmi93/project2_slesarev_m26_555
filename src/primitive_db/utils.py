@@ -2,7 +2,10 @@ import json
 
 
 def load_metadata(filepath):
-    """Загружает данные из JSON-файла. Если файл не найден, возвращает пустой словарь."""
+    """
+    Загружает данные из JSON-файла.
+    Если файл не найден, возвращает пустой словарь.
+    """
     try:
         with open(filepath, "r", encoding="utf-8") as file:
             return json.load(file)
