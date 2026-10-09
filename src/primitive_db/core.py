@@ -219,3 +219,24 @@ def update(table_data, set_clause, where_clause):
             record.update(set_clause)
 
     return table_data
+
+def delete(table_data, where_clause):
+    """
+    Удаление записей, соответствующих условию.
+
+    Args:
+        table_data: Список записей таблицы
+        where_clause: Словарь условий поиска записей
+
+    Returns:
+        Список записей после удаления
+    """
+    # Формирование списка записей, не подходящих под условие удаления
+    return [
+        record
+        for record in table_data
+        if not all(
+            record.get(column) == value
+            for column, value in where_clause.items()
+        )
+    ]
