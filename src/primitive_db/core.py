@@ -172,4 +172,27 @@ def insert(metadata, table_name, values):
 
     return data
 
+def select(table_data, where_clause=None):
+    """
+    Получение записей таблицы с учетом условия фильтрации.
 
+    Args:
+        table_data: Список записей таблицы
+        where_clause: Словарь условий фильтрации или None
+
+    Returns:
+        Список записей, удовлетворяющих условию
+    """
+    # Возврат всех записей при отсутствии условия
+    if where_clause is None:
+        return table_data.copy()
+
+    # Фильтрация записей по всем указанным условиям
+    return [
+        record
+        for record in table_data
+        if all(
+            record.get(column) == value
+            for column, value in where_clause.items()
+        )
+    ]
