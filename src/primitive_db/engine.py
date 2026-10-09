@@ -11,11 +11,7 @@ from primitive_db.core import (
     select,
     update,
 )
-from primitive_db.parser import (
-    parse_set,
-    parse_value,
-    parse_where
-)
+from primitive_db.parser import parse_set, parse_value, parse_where
 from primitive_db.utils import (
     load_metadata,
     load_table_data,
@@ -234,7 +230,9 @@ def _handle_command(command, metadata):
         # Сохранение данных после успешного обновления
         save_table_data(table_name, records)
         for record_id in sorted(before):
-            print(f'Запись с ID={record_id} в таблице "{table_name}" успешно обновлена.')
+            print(
+                f'Запись с ID={record_id} в таблице "{table_name}" успешно обновлена.'
+            )
         if not before:
             print("Записи, соответствующие условию, не найдены.")
         return metadata, True
@@ -251,7 +249,9 @@ def _handle_command(command, metadata):
         table_data = load_table_data(table_name)
         deleted_ids = [
             record["ID"] for record in table_data
-            if all(record.get(column) == value for column, value in where_clause.items())
+            if all(
+                record.get(column) == value for column, value in where_clause.items()
+            )
         ]
         records = delete(table_data, where_clause)
         # Сохранение данных после успешного удаления

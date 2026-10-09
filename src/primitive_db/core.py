@@ -1,3 +1,7 @@
+from primitive_db.decorators import handle_db_errors
+
+
+@handle_db_errors
 def create_table(metadata, table_name, columns):
     """
     Создание таблицы с указанными столбцами.
@@ -25,13 +29,14 @@ def create_table(metadata, table_name, columns):
     allowed_types = {"int", "str", "bool"}
 
     for column in columns:
-        try:
-            column_name, column_type = column.split(":")
-        except ValueError:
+        # Разделение имени и типа столбца
+        parts = column.split(":")
+        if len(parts) != 2:
             raise ValueError(
                 f"Некорректное описание столбца '{column}'. "
                 "Ожидаемый формат: 'имя:тип'."
             )
+        column_name, column_type = parts
 
         if column_type not in allowed_types:
             raise ValueError(
@@ -46,7 +51,7 @@ def create_table(metadata, table_name, columns):
 
     return metadata
 
-
+@handle_db_errors
 def drop_table(metadata, table_name):
     """
     Удаление таблицы из метаданных.
@@ -71,6 +76,7 @@ def drop_table(metadata, table_name):
 
     return metadata
 
+@handle_db_errors
 def _validate_value(value, column_type, column_name):
     """
     Проверка типа значения в соответствии со схемой столбца.
@@ -105,7 +111,8 @@ def _validate_value(value, column_type, column_name):
             f"Столбец '{column_name}' ожидает тип "
             f"'{column_type}', получен '{type(value).__name__}'."
         )
-
+    
+@handle_db_errors
 def insert(metadata, table_name, values):
     """
     Добавление новой записи в таблицу.
@@ -172,6 +179,7 @@ def insert(metadata, table_name, values):
 
     return data
 
+@handle_db_errors
 def select(table_data, where_clause=None):
     """
     Получение записей таблицы с учетом условия фильтрации.
@@ -197,6 +205,7 @@ def select(table_data, where_clause=None):
         )
     ]
 
+@handle_db_errors
 def update(table_data, set_clause, where_clause):
     """
     Обновление полей найденных записей.
@@ -220,6 +229,7 @@ def update(table_data, set_clause, where_clause):
 
     return table_data
 
+@handle_db_errors
 def delete(table_data, where_clause):
     """
     Удаление записей, соответствующих условию.
