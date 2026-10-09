@@ -196,3 +196,26 @@ def select(table_data, where_clause=None):
             for column, value in where_clause.items()
         )
     ]
+
+def update(table_data, set_clause, where_clause):
+    """
+    Обновление полей найденных записей.
+
+    Args:
+        table_data: Список записей таблицы
+        set_clause: Словарь изменяемых полей и новых значений
+        where_clause: Словарь условий поиска записей
+
+    Returns:
+        Измененный список записей
+    """
+    # Поиск записей, соответствующих условиям
+    for record in table_data:
+        if all(
+            record.get(column) == value
+            for column, value in where_clause.items()
+        ):
+            # Обновление найденной записи
+            record.update(set_clause)
+
+    return table_data
