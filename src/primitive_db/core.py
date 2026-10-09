@@ -106,3 +106,70 @@ def _validate_value(value, column_type, column_name):
             f"'{column_type}', получен '{type(value).__name__}'."
         )
 
+def insert(metadata, table_name, values):
+    """
+    Добавление новой записи в таблицу.
+
+    Args:
+        metadata: Метаданные базы данных
+        table_name: Имя таблицы
+        values: Список значений без столбца ID
+
+    Returns:
+        Список записей таблицы после добавления новой записи
+
+    Raises:
+        ValueError: Если таблица не существует, количество значений
+            неверно или типы данных не соответствуют схеме
+    """
+    from primitive_db.utils import load_table_data, save_table_data
+
+    # Проверка существования таблицы
+    if table_name not in metadata:
+        raise ValueError(f"Таблица '{table_name}' не существует.")
+
+    # Получение схемы таблицы
+    columns = metadata[table_name]["columns"]
+
+    # Исключение ID из списка обязательных входных значений
+    user_columns = columns[1:]
+
+    # Проверка количества переданных значений
+    if len(values) != len(user_columns):
+        raise ValueError(
+            f"Ожидается {len(user_columns)} значений, "
+            f"получено {len(values)}."
+        )
+
+    # Формирование новой записи
+    record = {}
+
+    for column, value in zip(user_columns, values):
+        column_name, column_type = column.split(":", 1)
+
+        # Проверка типа значения
+        _validate_value(value, column_type, column_name)
+
+        record[column_name] = value
+
+    # Загрузка существующих записей
+    data = load_table_data(table_name)
+
+    # Генерация уникального ID
+    new_id = max(
+        (record["ID"] for record in data),
+        default=0,
+    ) + 1
+
+    # Добавление ID в новую запись
+    record = {"ID": new_id, **record}
+
+    # Добавление записи в таблицу
+    data.append(record)
+
+    # Сохранение измененных данных
+    save_table_data(table_name, data)
+
+    return data
+
+
