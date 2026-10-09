@@ -70,3 +70,39 @@ def drop_table(metadata, table_name):
     del metadata[table_name]
 
     return metadata
+
+def _validate_value(value, column_type, column_name):
+    """
+    Проверка типа значения в соответствии со схемой столбца.
+
+    Args:
+        value: Проверяемое значение
+        column_type: Ожидаемый тип данных
+        column_name: Имя столбца
+
+    Raises:
+        ValueError: Если тип значения не соответствует схеме
+    """
+    # Определение допустимых типов данных
+    type_map = {
+        "int": int,
+        "str": str,
+        "bool": bool,
+    }
+
+    # Проверка существования типа в схеме
+    if column_type not in type_map:
+        raise ValueError(
+            f"Неизвестный тип '{column_type}' "
+            f"для столбца '{column_name}'."
+        )
+
+    expected_type = type_map[column_type]
+
+    # Проверка точного соответствия типа, исключая bool вместо int
+    if type(value) is not expected_type:
+        raise ValueError(
+            f"Столбец '{column_name}' ожидает тип "
+            f"'{column_type}', получен '{type(value).__name__}'."
+        )
+
