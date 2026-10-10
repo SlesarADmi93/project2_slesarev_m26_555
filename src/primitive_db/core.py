@@ -1,4 +1,4 @@
-from primitive_db.decorators import handle_db_errors, confirm_action
+from primitive_db.decorators import handle_db_errors, confirm_action, log_time
 
 
 @handle_db_errors
@@ -114,6 +114,7 @@ def _validate_value(value, column_type, column_name):
         )
     
 @handle_db_errors
+@log_time
 def insert(metadata, table_name, values):
     """
     Добавление новой записи в таблицу.
@@ -181,6 +182,7 @@ def insert(metadata, table_name, values):
     return data
 
 @handle_db_errors
+@log_time
 def select(table_data, where_clause=None):
     """
     Получение записей таблицы с учетом условия фильтрации.
