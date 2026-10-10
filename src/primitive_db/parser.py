@@ -1,6 +1,3 @@
-import re
-
-
 def parse_value(value):
     """
     Преобразование строкового значения в тип Python.
@@ -33,8 +30,12 @@ def parse_value(value):
         return False
 
     # Обработка целых чисел
-    if re.fullmatch(r"-?\d+", value):
-        return int(value)
+    try:
+        # Проверяем, что это действительно число
+        if value.lstrip('-').isdigit():
+            return int(value)
+    except ValueError:
+        pass
 
     raise ValueError(
         f"Некорректное значение: {value}. "
@@ -61,21 +62,31 @@ def parse_conditions(conditions):
     parts = conditions.split(",")
 
     for part in parts:
-        # Разделение имени столбца и значения
-        match = re.fullmatch(
-            r"\s*([A-Za-z_]\w*)\s*=\s*(.*?)\s*",
-            part,
-        )
-
-        if not match:
+        part = part.strip()
+        if not part:
+            continue
+            
+        # Разделение имени столбца и значения по знаку '='
+        if '=' not in part:
             raise ValueError(f"Некорректное условие: {part}")
-
-        column = match.group(1)
-        value = match.group(2)
-
+        
+        # Находим позицию первого '='
+        eq_index = part.index('=')
+        column = part[:eq_index].strip()
+        value_str = part[eq_index + 1:].strip()
+        
+        # Проверка имени столбца (должно начинаться с буквы или _)
+        if not column or not (column[0].isalpha() or column[0] == '_'):
+            raise ValueError(f"Некорректное имя столбца: {column}")
+        
+        # Проверка остальных символов имени столбца
+        for char in column[1:]:
+            if not (char.isalnum() or char == '_'):
+                raise ValueError(f"Некорректное имя столбца: {column}")
+        
         # Преобразование значения в соответствующий тип
-        result[column] = parse_value(value)
-
+        result[column] = parse_value(value_str)
+    
     return result
 
 
@@ -89,8 +100,9 @@ def parse_where(where_clause):
     Returns:
         Словарь условий фильтрации.
     """
+    if not where_clause or not where_clause.strip():
+        return {}
     return parse_conditions(where_clause)
-
 
 def parse_set(set_clause):
     """
@@ -102,4 +114,6 @@ def parse_set(set_clause):
     Returns:
         Словарь изменяемых полей.
     """
+    if not set_clause or not set_clause.strip():
+        return {}
     return parse_conditions(set_clause)
