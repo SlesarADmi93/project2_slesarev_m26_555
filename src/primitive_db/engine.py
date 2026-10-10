@@ -19,24 +19,14 @@ from primitive_db.utils import (
     save_metadata,
     save_table_data,
 )
+from primitive_db.constants import (
+    METADATA_FILE,
+    HELP_TEXT
+)
 
-METADATA_FILE = "db_meta.json"
+METADATA_FILE = METADATA_FILE
 
-HELP_TEXT = """Доступные команды:
-create table <имя> <столбец:тип> [столбец:тип ...]
-drop table <имя>
-insert into <имя> values (<значение1>, <значение2>, ...)
-select from <имя>
-select from <имя> where <столбец> = <значение>
-update <имя> set <столбец> = <значение> where <столбец> = <значение>
-delete from <имя> where <столбец> = <значение>
-info <имя>
-list tables
-help
-exit
-
-Строковые значения необходимо заключать в кавычки; типы: int, str, bool.
-"""
+HELP_TEXT = HELP_TEXT
 
 
 def _split_values(values_text):

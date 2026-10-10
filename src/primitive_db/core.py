@@ -4,7 +4,10 @@ from primitive_db.decorators import (
     handle_db_errors,
     log_time,
 )
-
+from primitive_db.constants import (
+    ALLOWED_COLUMN_TYPES,
+    TYPE_MAP
+)
 
 def list_tables(metadata):
     """
@@ -45,7 +48,7 @@ def create_table(metadata, table_name, columns):
     columns = ["ID:int"] + columns
 
     # Проверка допустимых типов данных
-    allowed_types = {"int", "str", "bool"}
+    allowed_types = ALLOWED_COLUMN_TYPES
 
     for column in columns:
         # Разделение имени и типа столбца
@@ -110,11 +113,7 @@ def _validate_value(value, column_type, column_name):
         ValueError: Если тип значения не соответствует схеме
     """
     # Определение допустимых типов данных
-    type_map = {
-        "int": int,
-        "str": str,
-        "bool": bool,
-    }
+    type_map = TYPE_MAP
 
     # Проверка существования типа в схеме
     if column_type not in type_map:
