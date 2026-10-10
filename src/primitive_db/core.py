@@ -1,4 +1,4 @@
-from primitive_db.decorators import handle_db_errors
+from primitive_db.decorators import handle_db_errors, confirm_action
 
 
 @handle_db_errors
@@ -52,6 +52,7 @@ def create_table(metadata, table_name, columns):
     return metadata
 
 @handle_db_errors
+@confirm_action
 def drop_table(metadata, table_name):
     """
     Удаление таблицы из метаданных.
@@ -230,6 +231,7 @@ def update(table_data, set_clause, where_clause):
     return table_data
 
 @handle_db_errors
+@confirm_action
 def delete(table_data, where_clause):
     """
     Удаление записей, соответствующих условию.
