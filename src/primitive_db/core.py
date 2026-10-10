@@ -1,5 +1,23 @@
-from primitive_db.decorators import handle_db_errors, confirm_action, log_time, create_cacher
+from primitive_db.decorators import (
+    confirm_action,
+    create_cacher,
+    handle_db_errors,
+    log_time,
+)
 
+
+def list_tables(metadata):
+    """
+    Получение списка всех существующих таблиц.
+    
+    Args:
+        metadata: Текущие метаданные базы данных
+    
+    Returns:
+        Список имен таблиц
+    """
+    # Извлечение имен таблиц из ключей метаданных
+    return list(metadata.keys())
 
 select_cache = create_cacher()
 @handle_db_errors

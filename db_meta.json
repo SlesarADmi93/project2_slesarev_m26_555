@@ -6,5 +6,21 @@
             "age:int",
             "is_active:bool"
         ]
+    },
+    "test_users": {
+        "columns": [
+            "ID:int",
+            "name:str",
+            "age:int",
+            "is_active:bool"
+        ]
+    },
+    "products": {
+        "columns": [
+            "ID:int",
+            "title:str",
+            "price:int",
+            "in_stock:bool"
+        ]
     }
 }

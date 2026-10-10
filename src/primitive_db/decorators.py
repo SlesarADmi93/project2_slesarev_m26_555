@@ -1,6 +1,6 @@
+import time
 from functools import wraps
 
-import time
 import prompt
 
 

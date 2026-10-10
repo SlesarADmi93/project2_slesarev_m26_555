@@ -8,6 +8,7 @@ from primitive_db.core import (
     delete,
     drop_table,
     insert,
+    list_tables,
     select,
     update,
 )
@@ -274,7 +275,20 @@ def _handle_command(command, metadata):
         print(f"Столбцы: {columns}")
         print(f"Количество записей: {len(table_data)}")
         return metadata, True
-
+    # Обработка команды показа списка таблиц
+    match = re.fullmatch(r"list_tables|list\s+tables", command, re.I)
+    if match:
+        # Получение списка таблиц
+        tables = list_tables(metadata)
+        
+        # Вывод результата в консоль
+        if not tables:
+            print("База данных пуста. Таблицы не найдены.")
+        else:
+            print("Список таблиц:")
+            for table in tables:
+                print(f"- {table}")
+        return metadata, True
     raise ValueError(f"Неизвестная команда: {command}\nВведите help для справки.")
 
 
