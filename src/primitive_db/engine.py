@@ -1,3 +1,4 @@
+import logging
 import re
 from pathlib import Path
 
@@ -292,11 +293,13 @@ def _handle_command(command, metadata):
     raise ValueError(f"Неизвестная команда: {command}\nВведите help для справки.")
 
 
+
 def run():
     """
     Запуск интерактивного цикла базы данных.
 
     Загружает метаданные, принимает команды и обрабатывает их до выхода.
+    Ошибки отдельных команд не завершают работу программы.
     """
     metadata = load_metadata(METADATA_FILE)
     print('База данных запущена. Введите "help" для справки.')
@@ -304,11 +307,14 @@ def run():
     # Основной цикл обработки команд
     while True:
         command = input(">>> Введите команду: ")
+
         try:
             metadata, should_continue = _handle_command(command, metadata)
-        except (ValueError, OSError, KeyError, TypeError) as error:
-            # Передача ошибки вызывающему уровню с сохранением контекста
-            raise RuntimeError(f"Ошибка выполнения команды: {error}") from error
+        except (ValueError, OSError, KeyError, TypeError, RuntimeError) as error:
+            # Вывод сообщения об ошибке без завершения программы
+            logging.error("Ошибка выполнения команды: %s", error)
+            continue
+
         if not should_continue:
             print("Работа базы данных завершена.")
             break

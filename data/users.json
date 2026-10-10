@@ -6,12 +6,6 @@
         "is_active": true
     },
     {
-        "ID": 2,
-        "name": "Anna",
-        "age": 25,
-        "is_active": false
-    },
-    {
         "ID": 3,
         "name": "Sergei",
         "age": 29,
@@ -25,6 +19,24 @@
     },
     {
         "ID": 5,
+        "name": "Ivan",
+        "age": 30,
+        "is_active": true
+    },
+    {
+        "ID": 6,
+        "name": "Sergei",
+        "age": 28,
+        "is_active": true
+    },
+    {
+        "ID": 7,
+        "name": "Anna",
+        "age": 25,
+        "is_active": false
+    },
+    {
+        "ID": 8,
         "name": "Ivan",
         "age": 30,
         "is_active": true

@@ -14,13 +14,5 @@
             "age:int",
             "is_active:bool"
         ]
-    },
-    "products": {
-        "columns": [
-            "ID:int",
-            "title:str",
-            "price:int",
-            "in_stock:bool"
-        ]
     }
 }

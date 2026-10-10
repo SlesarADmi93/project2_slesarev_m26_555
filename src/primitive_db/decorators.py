@@ -58,31 +58,31 @@ def handle_db_errors(func):
 def confirm_action(action_name):
     """
     Запрашивает подтверждение пользователя перед выполнением операции.
-
+    
     Args:
         action_name: Название операции, для которой требуется подтверждение.
-
+    
     Returns:
         Декоратор, отменяющий операцию при отсутствии подтверждения.
     """
-
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             # Запрос подтверждения выполнения операции
-            answer = prompt(
+            answer = prompt.string(
                 f'Вы уверены, что хотите выполнить "{action_name}"? [y/n]: '
             )
-
+            
             # Отмена операции при отсутствии подтверждения
-            if answer != "y":
-                return None
-
+            if answer.strip().lower() != "y":
+                print("Операция отменена.")
+                # Возврат первого аргумента (metadata или table_data), 
+                # чтобы не затереть данные при сохранении в engine.py
+                return args[0] if args else None
+                
             # Выполнение операции после подтверждения
             return func(*args, **kwargs)
-
         return wrapper
-
     return decorator
 
 def log_time(func):
