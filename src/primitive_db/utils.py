@@ -1,8 +1,8 @@
 import json
 import os
-from primitive_db.constants import (
-    DATA_DIR
-)
+
+from primitive_db.constants import DATA_DIR
+
 DATA_DIR = DATA_DIR
 
 

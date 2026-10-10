@@ -1,13 +1,11 @@
+from primitive_db.constants import ALLOWED_COLUMN_TYPES, TYPE_MAP
 from primitive_db.decorators import (
     confirm_action,
     create_cacher,
     handle_db_errors,
     log_time,
 )
-from primitive_db.constants import (
-    ALLOWED_COLUMN_TYPES,
-    TYPE_MAP
-)
+
 
 def list_tables(metadata):
     """

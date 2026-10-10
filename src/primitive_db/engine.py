@@ -3,6 +3,7 @@ import shlex
 import prompt
 from prettytable import PrettyTable
 
+from primitive_db.constants import HELP_TEXT, METADATA_FILE
 from primitive_db.core import (
     create_table,
     delete,
@@ -18,10 +19,6 @@ from primitive_db.utils import (
     load_table_data,
     save_metadata,
     save_table_data,
-)
-from primitive_db.constants import (
-    METADATA_FILE,
-    HELP_TEXT
 )
 
 METADATA_FILE = METADATA_FILE
@@ -170,20 +167,18 @@ def _handle_command(command, metadata):
     
     cmd = tokens[0].lower()
     
-    if cmd == "create" and len(tokens) >= 3 and tokens[1].lower() == "table":
-        table_name = tokens[2]
-        columns = tokens[3:]
-        
+    if cmd == "create_table" and len(tokens) >= 3:
+        table_name = tokens[1]
+        columns = tokens[2:]
         if not table_name or not (table_name[0].isalpha() or table_name[0] == '_'):
             raise ValueError(f"Некорректное имя таблицы: {table_name}")
-        
         metadata = create_table(metadata, table_name, columns)
         save_metadata(METADATA_FILE, metadata)
         print(f'Таблица "{table_name}" успешно создана.')
         return metadata, True
     
-    if cmd == "drop" and len(tokens) >= 3 and tokens[1].lower() == "table":
-        table_name = tokens[2]
+    if cmd == "drop_table" and len(tokens) >= 2:
+        table_name = tokens[1]
         metadata = drop_table(metadata, table_name)
         save_metadata(METADATA_FILE, metadata)
         print(f'Таблица "{table_name}" успешно удалена.')
@@ -319,7 +314,7 @@ def _handle_command(command, metadata):
         print(f"Количество записей: {len(table_data)}")
         return metadata, True
     
-    if cmd == "list" and len(tokens) >= 2 and tokens[1].lower() == "tables":
+    if cmd == "list_tables":
         tables = list_tables(metadata)
         if not tables:
             print("База данных пуста. Таблицы не найдены.")
