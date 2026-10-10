@@ -1,6 +1,7 @@
-from primitive_db.decorators import handle_db_errors, confirm_action, log_time
+from primitive_db.decorators import handle_db_errors, confirm_action, log_time, create_cacher
 
 
+select_cache = create_cacher()
 @handle_db_errors
 def create_table(metadata, table_name, columns):
     """
@@ -182,31 +183,49 @@ def insert(metadata, table_name, values):
     return data
 
 @handle_db_errors
-@log_time
 def select(table_data, where_clause=None):
     """
-    Получение записей таблицы с учетом условия фильтрации.
+    Получение записей таблицы с учетом условия фильтрации и кэширования.
 
     Args:
-        table_data: Список записей таблицы
-        where_clause: Словарь условий фильтрации или None
+        table_data: Список записей таблицы.
+        where_clause: Словарь условий фильтрации или None.
 
     Returns:
-        Список записей, удовлетворяющих условию
+        Список записей, удовлетворяющих условию.
     """
-    # Возврат всех записей при отсутствии условия
-    if where_clause is None:
-        return table_data.copy()
-
-    # Фильтрация записей по всем указанным условиям
-    return [
-        record
+    # Формирование ключа с учетом данных таблицы и условий
+    data_key = tuple(
+        tuple(sorted(record.items()))
         for record in table_data
-        if all(
-            record.get(column) == value
-            for column, value in where_clause.items()
-        )
-    ]
+    )
+    conditions_key = (
+        None
+        if where_clause is None
+        else tuple(sorted(where_clause.items()))
+    )
+    cache_key = (data_key, conditions_key)
+
+    def get_records():
+        # Возврат всех записей при отсутствии условия
+        if where_clause is None:
+            return [record.copy() for record in table_data]
+
+        # Фильтрация записей по всем указанным условиям
+        return [
+            record.copy()
+            for record in table_data
+            if all(
+                record.get(column) == value
+                for column, value in where_clause.items()
+            )
+        ]
+
+    # Получение результата из кэша или выполнение запроса
+    cached_records = select_cache(cache_key, get_records)
+
+    # Возврат копий для защиты кэшированных данных от изменений
+    return [record.copy() for record in cached_records]
 
 @handle_db_errors
 def update(table_data, set_clause, where_clause):

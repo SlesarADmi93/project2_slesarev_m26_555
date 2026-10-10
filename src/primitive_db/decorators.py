@@ -116,3 +116,35 @@ def log_time(func):
             )
 
     return wrapper
+
+def create_cacher():
+    """
+    Создание замыкания для кэширования результатов функций.
+
+    Returns:
+        Функцию cache_result для получения и сохранения результатов.
+    """
+    cache = {}
+
+    def cache_result(key, value_func):
+        """
+        Получение результата из кэша или вычисление нового результата.
+
+        Args:
+            key: Ключ для поиска результата в кэше.
+            value_func: Функция для получения данных при отсутствии кэша.
+
+        Returns:
+            Закэшированный или вычисленный результат.
+        """
+        # Проверка наличия результата в кэше
+        if key in cache:
+            return cache[key]
+
+        # Вычисление и сохранение результата
+        result = value_func()
+        cache[key] = result
+
+        return result
+
+    return cache_result
