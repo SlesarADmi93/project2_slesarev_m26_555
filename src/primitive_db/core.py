@@ -17,7 +17,6 @@ def list_tables(metadata):
     Returns:
         Список имен таблиц
     """
-    # Извлечение имен таблиц из ключей метаданных
     return list(metadata.keys())
 
 select_cache = create_cacher()
@@ -35,21 +34,17 @@ def create_table(metadata, table_name, columns):
     Обновленный словарь metadata.
 
     Raises:
-    ValueError: Если таблица уже существует или указаны некорректные данные.
+    KeyError: Если таблица уже существует или указаны некорректные данные.
     """
 
-    # Проверка существования таблицы
     if table_name in metadata:
-        raise ValueError(f"Ошибка: таблица '{table_name}' уже существует.")
+        raise KeyError(f"Ошибка: таблица '{table_name}' уже существует.")
 
-    # Добавление обязательного столбца ID
     columns = ["ID:int"] + columns
 
-    # Проверка допустимых типов данных
     allowed_types = ALLOWED_COLUMN_TYPES
 
     for column in columns:
-        # Разделение имени и типа столбца
         parts = column.split(":")
         if len(parts) != 2:
             raise ValueError(
@@ -64,7 +59,6 @@ def create_table(metadata, table_name, columns):
                 f"для столбца '{column_name}'."
             )
 
-    # Сохранение информации о таблице
     metadata[table_name] = {
         "columns": columns
     }
@@ -85,14 +79,12 @@ def drop_table(metadata, table_name):
     Обновленный словарь metadata.
 
     Raises:
-    ValueError: Если таблица уже существует или указаны некорректные данные.
+    KeyError: Если таблица уже существует или указаны некорректные данные.
     """
 
-    # Проверка существования таблицы
     if table_name not in metadata:
-        raise ValueError(f"Таблица '{table_name}' не существует.")
+        raise KeyError(f"Таблица '{table_name}' не существует.")
 
-    # Удаление таблицы
     del metadata[table_name]
 
     return metadata
@@ -110,10 +102,8 @@ def _validate_value(value, column_type, column_name):
     Raises:
         ValueError: Если тип значения не соответствует схеме
     """
-    # Определение допустимых типов данных
     type_map = TYPE_MAP
 
-    # Проверка существования типа в схеме
     if column_type not in type_map:
         raise ValueError(
             f"Неизвестный тип '{column_type}' "
@@ -122,7 +112,6 @@ def _validate_value(value, column_type, column_name):
 
     expected_type = type_map[column_type]
 
-    # Проверка точного соответствия типа, исключая bool вместо int
     if type(value) is not expected_type:
         raise ValueError(
             f"Столбец '{column_name}' ожидает тип "
@@ -144,60 +133,50 @@ def insert(metadata, table_name, values):
         Список записей таблицы после добавления новой записи
 
     Raises:
-        ValueError: Если таблица не существует, количество значений
+        KeyError: Если таблица не существует, количество значений
             неверно или типы данных не соответствуют схеме
     """
     from primitive_db.utils import load_table_data, save_table_data
 
-    # Проверка существования таблицы
     if table_name not in metadata:
-        raise ValueError(f"Таблица '{table_name}' не существует.")
+        raise KeyError(f"Таблица '{table_name}' не существует.")
 
-    # Получение схемы таблицы
     columns = metadata[table_name]["columns"]
 
-    # Исключение ID из списка обязательных входных значений
     user_columns = columns[1:]
 
-    # Проверка количества переданных значений
     if len(values) != len(user_columns):
         raise ValueError(
             f"Ожидается {len(user_columns)} значений, "
             f"получено {len(values)}."
         )
 
-    # Формирование новой записи
     record = {}
 
     for column, value in zip(user_columns, values):
         column_name, column_type = column.split(":", 1)
 
-        # Проверка типа значения
         _validate_value(value, column_type, column_name)
 
         record[column_name] = value
 
-    # Загрузка существующих записей
     data = load_table_data(table_name)
 
-    # Генерация уникального ID
     new_id = max(
         (record["ID"] for record in data),
         default=0,
     ) + 1
 
-    # Добавление ID в новую запись
     record = {"ID": new_id, **record}
 
-    # Добавление записи в таблицу
     data.append(record)
 
-    # Сохранение измененных данных
     save_table_data(table_name, data)
 
     return data
 
 @handle_db_errors
+@log_time
 def select(table_data, where_clause=None):
     """
     Получение записей таблицы с учетом условия фильтрации и кэширования.
@@ -209,7 +188,6 @@ def select(table_data, where_clause=None):
     Returns:
         Список записей, удовлетворяющих условию.
     """
-    # Формирование ключа с учетом данных таблицы и условий
     data_key = tuple(
         tuple(sorted(record.items()))
         for record in table_data
@@ -222,11 +200,9 @@ def select(table_data, where_clause=None):
     cache_key = (data_key, conditions_key)
 
     def get_records():
-        # Возврат всех записей при отсутствии условия
         if where_clause is None:
             return [record.copy() for record in table_data]
 
-        # Фильтрация записей по всем указанным условиям
         return [
             record.copy()
             for record in table_data
@@ -236,10 +212,8 @@ def select(table_data, where_clause=None):
             )
         ]
 
-    # Получение результата из кэша или выполнение запроса
     cached_records = select_cache(cache_key, get_records)
 
-    # Возврат копий для защиты кэшированных данных от изменений
     return [record.copy() for record in cached_records]
 
 @handle_db_errors
@@ -255,13 +229,11 @@ def update(table_data, set_clause, where_clause):
     Returns:
         Измененный список записей
     """
-    # Поиск записей, соответствующих условиям
     for record in table_data:
         if all(
             record.get(column) == value
             for column, value in where_clause.items()
         ):
-            # Обновление найденной записи
             record.update(set_clause)
 
     return table_data
@@ -279,7 +251,6 @@ def delete(table_data, where_clause):
     Returns:
         Список записей после удаления
     """
-    # Формирование списка записей, не подходящих под условие удаления
     return [
         record
         for record in table_data

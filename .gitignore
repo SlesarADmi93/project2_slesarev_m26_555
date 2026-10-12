@@ -6,5 +6,9 @@ dist/
 wheels/
 *.egg-info
 
+# Файлы хранения данных
+data/
+db_meta.json
+
 # Virtual environments
 .venv 

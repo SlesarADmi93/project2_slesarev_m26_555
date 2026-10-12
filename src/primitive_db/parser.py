@@ -14,7 +14,6 @@ def parse_value(value):
     """
     value = value.strip()
 
-    # Обработка строковых значений в кавычках
     if (
         len(value) >= 2
         and value[0] == value[-1]
@@ -22,16 +21,13 @@ def parse_value(value):
     ):
         return value[1:-1]
 
-    # Обработка логических значений
     if value.lower() == "true":
         return True
 
     if value.lower() == "false":
         return False
 
-    # Обработка целых чисел
     try:
-        # Проверяем, что это действительно число
         if value.lstrip('-').isdigit():
             return int(value)
     except ValueError:
@@ -58,7 +54,6 @@ def parse_conditions(conditions):
     """
     result = {}
 
-    # Разделение условий по запятой
     parts = conditions.split(",")
 
     for part in parts:
@@ -66,25 +61,20 @@ def parse_conditions(conditions):
         if not part:
             continue
             
-        # Разделение имени столбца и значения по знаку '='
         if '=' not in part:
             raise ValueError(f"Некорректное условие: {part}")
         
-        # Находим позицию первого '='
         eq_index = part.index('=')
         column = part[:eq_index].strip()
         value_str = part[eq_index + 1:].strip()
         
-        # Проверка имени столбца (должно начинаться с буквы или _)
         if not column or not (column[0].isalpha() or column[0] == '_'):
             raise ValueError(f"Некорректное имя столбца: {column}")
         
-        # Проверка остальных символов имени столбца
         for char in column[1:]:
             if not (char.isalnum() or char == '_'):
                 raise ValueError(f"Некорректное имя столбца: {column}")
         
-        # Преобразование значения в соответствующий тип
         result[column] = parse_value(value_str)
     
     return result

@@ -68,19 +68,14 @@ def confirm_action(action_name):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            # Запрос подтверждения выполнения операции
             answer = prompt.string(
                 f'Вы уверены, что хотите выполнить "{action_name}"? [y/n]: '
             )
             
-            # Отмена операции при отсутствии подтверждения
             if answer.strip().lower() != "y":
                 print("Операция отменена.")
-                # Возврат первого аргумента (metadata или table_data), 
-                # чтобы не затереть данные при сохранении в engine.py
                 return args[0] if args else None
                 
-            # Выполнение операции после подтверждения
             return func(*args, **kwargs)
         return wrapper
     return decorator
@@ -98,18 +93,14 @@ def log_time(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        # Фиксация времени начала выполнения
         start_time = time.monotonic()
 
-        # Выполнение функции
         try:
             return func(*args, **kwargs)
         finally:
-            # Расчет времени выполнения
             end_time = time.monotonic()
             elapsed_time = end_time - start_time
 
-            # Вывод результата измерения
             print(
                 f"Функция {func.__name__} выполнилась за "
                 f"{elapsed_time:.3f} секунд"
@@ -137,11 +128,9 @@ def create_cacher():
         Returns:
             Закэшированный или вычисленный результат.
         """
-        # Проверка наличия результата в кэше
         if key in cache:
             return cache[key]
 
-        # Вычисление и сохранение результата
         result = value_func()
         cache[key] = result
 

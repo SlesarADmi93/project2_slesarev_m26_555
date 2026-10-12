@@ -1,54 +1,45 @@
-.PHONY: help install run test lint clean build check-publish
+.PHONY: help install run test lint lint-fix clean build check-publish
 
 GREEN := \033[0;32m
 NC := \033[0m # No Color
 
 help:
-	@echo "Доступные команды:"
-	@echo "  make install          - Установить зависимости (uv sync)"
-	@echo "  make run              - Запустить приложение (uv run database)"
-	@echo "  make lint             - Проверка кода линтером Ruff"
-	@echo "  make lint-fix         - Автоматическое исправление ошибок Ruff"
-	@echo "  make build            - Сборка пакета (uv build)"
-	@echo "  make check-publish    - Проверка метаданных перед публикацией"
-	@echo "  make clean            - Очистка временных файлов"
+	@echo "Available commands:"
+	@echo "  make install          - Install dependencies (uv sync)"
+	@echo "  make build            - Build the package (uv build)"
+	@echo "  make run              - Run the application (uv run database)"
+	@echo "  make lint             - Check code style with Ruff"
+	@echo "  make lint-fix         - Auto-fix code style issues with Ruff"
+	@echo "  make check-publish    - Check package metadata before publishing"
+	@echo "  make clean            - Clean temporary files, data, and metadata"
 
 install:
-	@echo "$(GREEN)Установка зависимостей через uv...$(NC)"
+	@echo "$(GREEN)Installing dependencies via uv...$(NC)"
 	uv sync
 
+build:
+	@echo "$(GREEN)Building package...$(NC)"
+	uv build
+
 run:
-	@echo "$(GREEN)Запуск базы данных...$(NC)"
+	@echo "$(GREEN)Starting database...$(NC)"
 	uv run database
 
 lint:
-	@echo "$(GREEN)Проверка стиля кода (Ruff)...$(NC)"
+	@echo "$(GREEN)Checking code style (Ruff)...$(NC)"
 	uv run ruff check .
 
 lint-fix:
-	@echo "$(GREEN)Исправление стиля кода (Ruff)...$(NC)"
+	@echo "$(GREEN)Fixing code style (Ruff)...$(NC)"
 	uv run ruff check . --fix
 
-test:
-	@echo "$(GREEN)Запуск тестов...$(NC)"
-	# Если у вас есть pytest, раскомментируйте строку ниже:
-	# uv run pytest
-	@echo "Тесты не настроены или отсутствуют."
-
-build:
-	@echo "$(GREEN)Сборка пакета...$(NC)"
-	uv build
-
 check-publish:
-	@echo "$(GREEN)Проверка метаданных пакета...$(NC)"
+	@echo "$(GREEN)Checking package metadata...$(NC)"
 	uv build
 	uvx twine check dist/*
 
 clean:
-	@echo "$(GREEN)Очистка временных файлов...$(NC)"
-	rm -rf __pycache__
-	rm -rf .pytest_cache
-	rm -rf dist/
-	rm -rf *.egg-info
-	find . -type d -name "__pycache__" -exec rm -r {} +
-	@echo "Очистка завершена."
+	@echo "$(GREEN)Cleaning temporary files, data, and metadata...$(NC)"
+	python -c "import shutil, os; [shutil.rmtree(p) for p in ['__pycache__', '.pytest_cache', 'dist', 'data'] if os.path.exists(p)]; [os.remove(f) for f in ['db_meta.json'] + [f for f in os.listdir('.') if f.endswith('.egg-info')] if os.path.exists(f)]"
+	uv cache clean
+	@echo "Cleanup completed."

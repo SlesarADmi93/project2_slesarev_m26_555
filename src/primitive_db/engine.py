@@ -340,7 +340,7 @@ def run():
         try:
             command = prompt.string(">>> Введите команду: ")
         except (EOFError, KeyboardInterrupt):
-            print("\\nРабота базы данных завершена.")
+            print("\nРабота базы данных завершена.")
             break
         
         try:

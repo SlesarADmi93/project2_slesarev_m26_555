@@ -61,7 +61,6 @@ def save_table_data(table_name, data):
         table_name: Имя таблицы.
         data: Данные таблицы для сохранения.
     """
-    # Создаем директорию, если она не существует
     if not os.path.exists(DATA_DIR):
         os.makedirs(DATA_DIR)
     
