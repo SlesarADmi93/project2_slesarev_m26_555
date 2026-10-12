@@ -166,8 +166,8 @@ database
 
 Ниже представлена запись сеанса работы с базой данных: установка пакета, создание таблицы, добавление данных, проверка и удаление.
 
-[![Демонстрация работы базы данных](https://asciinema.org/a/y3a1gRBSGdTybtHG.svg)](https://asciinema.org/a/y3a1gRBSGdTybtHG)
+[![Демонстрация работы базы данных](https://asciinema.org/a/HAGyAP1saX6cBRdr.svg)](https://asciinema.org/a/HAGyAP1saX6cBRdr)
 
-## Лицензия
+## License
 
-------
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
